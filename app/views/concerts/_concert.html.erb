@@ -1,0 +1,18 @@
+<li class="column is-half">
+  <div class="card mb-2">
+    <div class="card-content">
+      <p class="title">
+        <%= concert.title %>
+      </p>
+      <p class="subtitle">
+        <%= concert.starts_at.to_formatted_s :long_ordinal %>
+      </p>
+    </div>
+
+    <footer class="card-footer">
+      <p class="card-footer-item">
+        <%= link_to "Book", "#", class: "button is-primary is-light is-outlined is-medium is-fullwidth is-rounded" %>
+      </p>
+    </footer>
+  </div>
+</li>
