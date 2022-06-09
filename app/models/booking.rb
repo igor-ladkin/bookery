@@ -5,9 +5,4 @@ class Booking < ApplicationRecord
   validates :ticket_type, inclusion: { in: ->(booking) { booking.concert&.available_ticket_types || [] } }
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }
 
-  enum state: {
-    pending: "pending",
-    paid: "paid",
-    cancelled: "cancelled"
-  }
 end
