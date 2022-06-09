@@ -28,6 +28,10 @@ class BookingsController < ApplicationController
     end
 
   rescue Payment::ChargeError => e
+    Analytics.track "payment-failed",
+        concert_id: @booking.concert_id,
+        user_id: current_user.id
+
     flash.now[:alert] = "Sorry, there was an error processing your payment!"
     redirect_to concerts_path
 
