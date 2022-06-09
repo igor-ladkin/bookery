@@ -13,7 +13,8 @@
                  collection: concert.available_ticket_types,
                  as: "ticket" %>
 
-      <p class="mt-1">Tickets remaining: <%= concert.remaining_ticket_count %></p>
+      <%= render partial: "remaining_tickets",
+                 locals: { concert: concert } %>
     </div>
 
     <footer class="card-footer">
