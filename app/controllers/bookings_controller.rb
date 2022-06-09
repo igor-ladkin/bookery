@@ -8,11 +8,14 @@ class BookingsController < ApplicationController
   def create
     @booking = current_user.bookings.new booking_params
 
-    if @booking.save
-      redirect_to concerts_path, notice: "Your booking has been created!"
-    else
-      render :new, status: :unprocessable_entity
+    Booking.transaction do
+      @booking.concert.decrement! :remaining_ticket_count, @booking.quantity
+      @booking.save!
     end
+
+    redirect_to concerts_path, notice: "Your booking has been created!"
+  rescue ActiveRecord::RecordInvalid
+    render :new, status: :unprocessable_entity
   end
 
   private
