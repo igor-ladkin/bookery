@@ -10,6 +10,10 @@ class Concert < ApplicationRecord
     %w[standard premium vip]
   end
 
+  def sold_out?
+    remaining_ticket_count.zero?
+  end
+
   private
 
   def validate_available_ticket_types
