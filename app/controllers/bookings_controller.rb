@@ -30,6 +30,9 @@ class BookingsController < ApplicationController
   rescue Payment::ChargeError => e
     flash.now[:alert] = "Sorry, there was an error processing your payment!"
     redirect_to concerts_path
+
+  ensure
+    BookingsMailer.with(booking: @booking).confirmation_email.deliver_later if @booking.persisted?
   end
 
   private
