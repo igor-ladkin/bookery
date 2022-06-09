@@ -16,6 +16,14 @@ class BookingsController < ApplicationController
     redirect_to concerts_path, notice: "Your booking has been created!"
   rescue ActiveRecord::RecordInvalid
     render :new, status: :unprocessable_entity
+
+  rescue ActiveRecord::StatementInvalid => e
+    if e.message =~ /constraint failed: concert_remaining_ticket_count_positive/
+      flash.now[:alert] = "Sorry, that concert is sold out!"
+      render :new, status: :unprocessable_entity
+    else
+      raise e
+    end
   end
 
   private
