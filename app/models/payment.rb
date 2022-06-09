@@ -16,8 +16,6 @@ class Payment < ApplicationRecord
 
   cattr_accessor :adapter
 
-  self.adapter = SuccessAdapter.new
-
   def self.process(...)
     adapter.process(...)
   end
