@@ -13,6 +13,8 @@ class BookingsController < ApplicationController
       @booking.save!
     end
 
+    payment = Payment.process(@booking, current_user)
+
     redirect_to concerts_path, notice: "Your booking has been created!"
   rescue ActiveRecord::RecordInvalid
     render :new, status: :unprocessable_entity
@@ -24,6 +26,10 @@ class BookingsController < ApplicationController
     else
       raise e
     end
+
+  rescue Payment::ChargeError => e
+    flash.now[:alert] = "Sorry, there was an error processing your payment!"
+    redirect_to concerts_path
   end
 
   private
