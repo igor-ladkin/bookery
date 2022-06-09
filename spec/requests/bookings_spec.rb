@@ -92,6 +92,20 @@ RSpec.describe "Bookings", type: :request do
       end
     end
 
+    context "with quantity as a random string" do
+      let(:booking_params) do
+        super().merge quantity: "random"
+      end
+
+      include_examples "bad request"
+      include_examples "booking not placed"
+
+      it "adds field error" do
+        request
+        expect(response.body).to match(/is not a number/)
+      end
+    end
+
     context "with negative quantity" do
       let(:booking_params) do
         super().merge quantity: -1
