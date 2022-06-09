@@ -7,8 +7,10 @@ RSpec.describe "Bookings", type: :request do
         request
         expect(response).to have_http_status(:unprocessable_entity)
       end
+    end
 
-      it "doesn't create a booking" do
+    shared_examples "booking not placed" do
+       it "doesn't create a booking" do
         expect { request }.not_to change { user.bookings.count }
       end
 
@@ -24,7 +26,7 @@ RSpec.describe "Bookings", type: :request do
       end
     end
 
-    shared_examples "a placed booking" do
+    shared_examples "booking placed" do
       it "returns http redirect" do
         request
         expect(response).to have_http_status(:redirect)
@@ -63,7 +65,7 @@ RSpec.describe "Bookings", type: :request do
     end
 
     context "happy path" do
-      include_examples "a placed booking"
+      include_examples "booking placed"
 
       it "adds successful flash message" do
         request
@@ -89,6 +91,7 @@ RSpec.describe "Bookings", type: :request do
       end
 
       include_examples "a bad request"
+      include_examples "booking not placed"
     end
 
     context "with quantity greater than tickets limit" do
@@ -97,6 +100,7 @@ RSpec.describe "Bookings", type: :request do
       end
 
       include_examples "a bad request"
+      include_examples "booking not placed"
     end
 
     context "with quantity greater than remaining tickets" do
@@ -109,6 +113,7 @@ RSpec.describe "Bookings", type: :request do
       end
 
       include_examples "a bad request"
+      include_examples "booking not placed"
 
       it "adds alert flash message" do
         request
@@ -122,6 +127,7 @@ RSpec.describe "Bookings", type: :request do
       end
 
       include_examples "a bad request"
+      include_examples "booking not placed"
     end
 
     context "when concert is sold out" do
@@ -130,6 +136,7 @@ RSpec.describe "Bookings", type: :request do
       end
 
       include_examples "a bad request"
+      include_examples "booking not placed"
 
       it "adds alert flash message" do
         request
@@ -177,7 +184,7 @@ RSpec.describe "Bookings", type: :request do
         Payment.adapter = Payment::SuccessAdapter.new
       end
 
-      include_examples "a placed booking"
+      include_examples "booking placed"
 
       it "adds alert flash message" do
         request
