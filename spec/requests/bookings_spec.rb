@@ -99,6 +99,11 @@ RSpec.describe "Bookings", type: :request do
 
       include_examples "bad request"
       include_examples "booking not placed"
+
+      it "adds field error" do
+        request
+        expect(response.body).to match(/must be greater than or equal to 0/)
+      end
     end
 
     context "with quantity greater than tickets limit" do
@@ -108,6 +113,11 @@ RSpec.describe "Bookings", type: :request do
 
       include_examples "bad request"
       include_examples "booking not placed"
+
+      it "adds field error" do
+        request
+        expect(response.body).to match(/must be less than or equal to #{Booking::TICKET_LIMIT}/)
+      end
     end
 
     context "with quantity greater than remaining tickets" do
