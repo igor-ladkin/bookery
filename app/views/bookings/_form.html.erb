@@ -1,0 +1,22 @@
+<%= form_with(model: [:concert, booking]) do |form| %>
+  <div class="field">
+    <%= form.hidden_field :concert_id %>
+  </div>
+
+  <div class="field ">
+    <%= form.label :ticket_type, "Ticket type", class: "label" %>
+    <div class="select is-rounded">
+      <%= form.select :ticket_type, Concert.available_ticket_types %>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= form.label :quantity, class: "label" %>
+    <%= form.number_field :quantity, class: "input" %>
+    <%= error_tag form.object, :quantity %>
+  </div>
+
+  <div class="field buttons is-centered mt-5">
+    <%= form.submit nil, class: "button is-primary is-rounded" %>
+  </div>
+<% end %>

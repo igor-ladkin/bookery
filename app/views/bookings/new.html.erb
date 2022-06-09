@@ -1,0 +1,10 @@
+<h1 class="is-size-4 mb-4">
+  Book your ticket for
+  <span class="has-text-weight-bold"><%= @booking.concert.title %></span>
+</h1>
+
+<div class="card" style="max-width: 450px">
+  <div class="card-content">
+    <%= render "form", booking: @booking %>
+  </div>
+</div>
