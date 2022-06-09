@@ -8,9 +8,13 @@ class BookingsController < ApplicationController
 
   def create
     @booking = current_user.bookings.new booking_params
+    @booking.valid?
 
     if requested_quantity.negative? || requested_quantity > Booking::TICKET_LIMIT
-      @booking.valid?
+      render :new, status: :bad_request and return
+    end
+
+    if @booking.errors.has_key? :quantity
       render :new, status: :bad_request and return
     end
 
