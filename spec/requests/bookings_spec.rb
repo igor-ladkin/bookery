@@ -51,6 +51,10 @@ RSpec.describe "Bookings", type: :request do
         request
         expect(flash[:notice]).to eq("Your booking has been created!")
       end
+
+      it "charges the user for the tickets" do
+        expect { request }.to change { user.payments.completed.count }.by(1)
+      end
     end
 
     context "with invalid quantity" do
@@ -79,6 +83,27 @@ RSpec.describe "Bookings", type: :request do
       it "adds alert flash message" do
         request
         expect(flash[:alert]).to eq("Sorry, that concert is sold out!")
+      end
+    end
+
+    context "when payment fails" do
+      before do
+        Payment.adapter = Payment::FailureAdapter.new
+      end
+
+      after do
+        Payment.adapter = Payment::SuccessAdapter.new
+      end
+
+      include_examples "a placed booking"
+
+      it "adds alert flash message" do
+        request
+        expect(flash[:alert]).to eq("Sorry, there was an error processing your payment!")
+      end
+
+      it "keeps pending payment for the tickets" do
+        expect { request }.to change { user.payments.pending.count }.by(1)
       end
     end
   end
