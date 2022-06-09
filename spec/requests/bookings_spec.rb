@@ -2,7 +2,14 @@ require 'rails_helper'
 
 RSpec.describe "Bookings", type: :request do
   describe "POST /create" do
-    shared_examples "a bad request" do
+    shared_examples "bad request" do
+      it "returns http bad request" do
+        request
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
+
+    shared_examples "unprocessable entity" do
       it "returns http unprocessable entity" do
         request
         expect(response).to have_http_status(:unprocessable_entity)
@@ -90,7 +97,7 @@ RSpec.describe "Bookings", type: :request do
         super().merge quantity: -1
       end
 
-      include_examples "a bad request"
+      include_examples "bad request"
       include_examples "booking not placed"
     end
 
@@ -99,7 +106,7 @@ RSpec.describe "Bookings", type: :request do
         super().merge quantity: Booking::TICKET_LIMIT + 1
       end
 
-      include_examples "a bad request"
+      include_examples "bad request"
       include_examples "booking not placed"
     end
 
@@ -112,7 +119,7 @@ RSpec.describe "Bookings", type: :request do
         concert.update! remaining_ticket_count: 2
       end
 
-      include_examples "a bad request"
+      include_examples "unprocessable entity"
       include_examples "booking not placed"
 
       it "adds alert flash message" do
@@ -126,7 +133,7 @@ RSpec.describe "Bookings", type: :request do
         super().merge ticket_type: "premium"
       end
 
-      include_examples "a bad request"
+      include_examples "unprocessable entity"
       include_examples "booking not placed"
     end
 
@@ -135,7 +142,7 @@ RSpec.describe "Bookings", type: :request do
         concert.update! remaining_ticket_count: 0
       end
 
-      include_examples "a bad request"
+      include_examples "unprocessable entity"
       include_examples "booking not placed"
 
       it "adds alert flash message" do
