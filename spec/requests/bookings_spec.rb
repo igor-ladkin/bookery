@@ -137,6 +137,37 @@ RSpec.describe "Bookings", type: :request do
       end
     end
 
+    context "when user has unpaid bookings" do
+      before do
+        user.bookings.create booking_params
+      end
+
+      it "returns http redirect" do
+        request
+        expect(response).to have_http_status(:redirect)
+      end
+
+      it "doesn't create a booking" do
+        expect { request }.not_to change { user.bookings.count }
+      end
+
+      it "doesn't reduce the available tickets for a concert" do
+        expect { request }.not_to change { concert.reload.remaining_ticket_count }
+      end
+
+      it "does not send confirmation email" do
+        expect { request }
+          .not_to have_enqueued_job(ActionMailer::MailDeliveryJob)
+          .on_queue("default")
+          .with 'BookingsMailer', 'confirmation_email', 'deliver_now', params: { booking: a_kind_of(Booking) }, args: []
+      end
+
+      it "adds alert flash message" do
+        request
+        expect(flash[:alert]).to eq("Sorry, you have unpaid bookings!")
+      end
+    end
+
     context "when payment fails" do
       before do
         Payment.adapter = Payment::FailureAdapter.new
