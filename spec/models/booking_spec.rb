@@ -19,8 +19,13 @@ RSpec.describe Booking, type: :model do
       expect(booking.errors).to have_key(:quantity)
     end
 
-    it "is not valid with quantity < 0" do
+    it "is not valid with quantity less than 0" do
       booking = build_booking quantity: -1
+      expect(booking.errors).to have_key(:quantity)
+    end
+
+    it "is not valid with quantity equal to 0" do
+      booking = build_booking quantity: 0
       expect(booking.errors).to have_key(:quantity)
     end
   end
