@@ -1,0 +1,7 @@
+<%= @booking.user.name.capitalize %> is going to <%= @booking.concert.title %>
+
+<% if @booking.paid? %>
+  And your tickets are on the way!
+<% else %>
+  Yet the booking is not paid. You have 24 hours to complete the payment.
+<% end %>

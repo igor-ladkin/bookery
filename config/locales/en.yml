@@ -30,4 +30,6 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  bookings_mailer:
+    confirmation_email:
+      subject: "Booking confirmation"
