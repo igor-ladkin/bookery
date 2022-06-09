@@ -15,6 +15,13 @@ RSpec.describe "Bookings", type: :request do
       it "doesn't reduce the available tickets for a concert" do
         expect { request }.not_to change { concert.reload.remaining_ticket_count }
       end
+
+      it "does not send confirmation email" do
+        expect { request }
+          .not_to have_enqueued_job(ActionMailer::MailDeliveryJob)
+          .on_queue("default")
+          .with 'BookingsMailer', 'confirmation_email', 'deliver_now', params: { booking: a_kind_of(Booking) }, args: []
+      end
     end
 
     shared_examples "a placed booking" do
@@ -29,6 +36,13 @@ RSpec.describe "Bookings", type: :request do
 
       it "reduces the available tickets for a concert" do
         expect { request }.to change { concert.reload.remaining_ticket_count }.by(-2)
+      end
+
+      it "sends confirmation email" do
+        expect { request }
+          .to have_enqueued_job(ActionMailer::MailDeliveryJob)
+          .on_queue("default")
+          .with 'BookingsMailer', 'confirmation_email', 'deliver_now', params: { booking: a_kind_of(Booking) }, args: []
       end
     end
 
