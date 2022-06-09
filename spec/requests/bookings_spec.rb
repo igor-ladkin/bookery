@@ -91,12 +91,29 @@ RSpec.describe "Bookings", type: :request do
       include_examples "a bad request"
     end
 
-    context "with quantity greater tickets limit" do
+    context "with quantity greater than tickets limit" do
       let(:booking_params) do
         super().merge quantity: Booking::TICKET_LIMIT + 1
       end
 
       include_examples "a bad request"
+    end
+
+    context "with quantity greater than remaining tickets" do
+      let(:booking_params) do
+        super().merge quantity: 3
+      end
+
+      before do
+        concert.update! remaining_ticket_count: 2
+      end
+
+      include_examples "a bad request"
+
+      it "adds alert flash message" do
+        request
+        expect(flash[:alert]).to eq("Sorry, we only have 2 tickets left for this concert!")
+      end
     end
 
     context "with invalid ticket_type" do
