@@ -59,5 +59,13 @@ RSpec.describe "Bookings", type: :request do
 
       include_examples "a bad request"
     end
+
+    context "when concert is sold out" do
+      before do
+        concert.update! remaining_ticket_count: 0
+      end
+
+      include_examples "a bad request"
+    end
   end
 end
