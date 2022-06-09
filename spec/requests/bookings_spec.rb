@@ -71,9 +71,17 @@ RSpec.describe "Bookings", type: :request do
       end
     end
 
-    context "with invalid quantity" do
+    context "with negative quantity" do
       let(:booking_params) do
         super().merge quantity: -1
+      end
+
+      include_examples "a bad request"
+    end
+
+    context "with quantity greater tickets limit" do
+      let(:booking_params) do
+        super().merge quantity: Booking::TICKET_LIMIT + 1
       end
 
       include_examples "a bad request"
