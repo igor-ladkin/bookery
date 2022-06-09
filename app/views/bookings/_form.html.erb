@@ -12,7 +12,11 @@
 
   <div class="field">
     <%= form.label :quantity, class: "label" %>
-    <%= form.number_field :quantity, class: "input", min: 0, max: Booking::TICKET_LIMIT %>
+    <%= form.number_field :quantity,
+                          class: "input",
+                          min: 0,
+                          max: [Booking::TICKET_LIMIT, booking.concert.remaining_ticket_count].min %>
+
     <%= error_tag form.object, :quantity %>
   </div>
 
