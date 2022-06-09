@@ -32,7 +32,17 @@ class BookingsController < ApplicationController
     redirect_to concerts_path
 
   ensure
-    BookingsMailer.with(booking: @booking).confirmation_email.deliver_later if @booking.persisted?
+    if @booking.persisted?
+      BookingsMailer
+        .with(booking: @booking)
+        .confirmation_email
+        .deliver_later
+
+      Analytics.track "booking-placed",
+        concert_id: @booking.concert_id,
+        user_id: current_user.id,
+        paid: @booking.paid?
+    end
   end
 
   private
