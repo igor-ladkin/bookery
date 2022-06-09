@@ -69,6 +69,14 @@ RSpec.describe "Bookings", type: :request do
       it "charges the user for the tickets" do
         expect { request }.to change { user.payments.completed.count }.by(1)
       end
+
+      it "tracks placed booking" do
+        expect(Analytics)
+          .to receive(:track)
+          .with "booking-placed", user_id: user.id, concert_id: concert.id, paid: true
+
+        request
+      end
     end
 
     context "with negative quantity" do
@@ -126,6 +134,14 @@ RSpec.describe "Bookings", type: :request do
 
       it "keeps pending payment for the tickets" do
         expect { request }.to change { user.payments.pending.count }.by(1)
+      end
+
+      it "tracks placed booking" do
+        expect(Analytics)
+          .to receive(:track)
+          .with "booking-placed", user_id: user.id, concert_id: concert.id, paid: false
+
+        request
       end
     end
   end
