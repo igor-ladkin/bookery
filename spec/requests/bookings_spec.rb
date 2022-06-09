@@ -106,7 +106,7 @@ RSpec.describe "Bookings", type: :request do
       end
     end
 
-    context "with negative quantity" do
+    context "with non-positive quantity" do
       let(:booking_params) do
         super().merge quantity: -1
       end
@@ -116,7 +116,7 @@ RSpec.describe "Bookings", type: :request do
 
       it "adds field error" do
         request
-        expect(response.body).to match(/must be greater than or equal to 0/)
+        expect(response.body).to match(/must be greater than or equal to 1/)
       end
     end
 
