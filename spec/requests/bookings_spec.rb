@@ -17,6 +17,21 @@ RSpec.describe "Bookings", type: :request do
       end
     end
 
+    shared_examples "a placed booking" do
+      it "returns http redirect" do
+        request
+        expect(response).to have_http_status(:redirect)
+      end
+
+      it "creates a booking for a user" do
+        expect { request }.to change { user.bookings.count }.by(1)
+      end
+
+      it "reduces the available tickets for a concert" do
+        expect { request }.to change { concert.reload.remaining_ticket_count }.by(-2)
+      end
+    end
+
     subject(:request) { post concert_bookings_path(concert), params: { booking: booking_params } }
 
     let(:user) { User.first }
@@ -30,22 +45,11 @@ RSpec.describe "Bookings", type: :request do
     end
 
     context "happy path" do
-      it "returns http redirect" do
-        request
-        expect(response).to have_http_status(:redirect)
-      end
+      include_examples "a placed booking"
 
       it "adds successful flash message" do
         request
         expect(flash[:notice]).to eq("Your booking has been created!")
-      end
-
-      it "creates a booking for a user" do
-        expect { request }.to change { user.bookings.count }.by(1)
-      end
-
-      it "reduces the available tickets for a concert" do
-        expect { request }.to change { concert.reload.remaining_ticket_count }.by(-2)
       end
     end
 
