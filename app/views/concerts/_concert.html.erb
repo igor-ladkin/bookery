@@ -19,7 +19,12 @@
 
     <footer class="card-footer">
       <p class="card-footer-item">
-        <%= link_to "Book", new_concert_booking_path(concert), class: "button is-primary is-light is-outlined is-medium is-fullwidth is-rounded" %>
+        <% classes = "button is-primary is-outlined is-medium is-fullwidth is-rounded" %>
+        <%=
+          link_to_unless concert.sold_out?, "Buy tickets", new_concert_booking_path(concert), class: classes do |name, _options, html_options|
+            button_tag name, html_options.merge(disabled: true, type: "button")
+          end
+        %>
       </p>
     </footer>
   </div>
