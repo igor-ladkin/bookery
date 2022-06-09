@@ -1,0 +1,15 @@
+<section class="notifications">
+  <% if flash.notice.present? %>
+    <div class="notification is-success">
+      <button class="delete"></button>
+      <%= flash.notice %>
+    </div>
+  <% end %>
+
+  <% if flash.alert.present? %>
+    <div class="notification is-warning">
+      <button class="delete"></button>
+      <%= flash.alert %>
+    </div>
+  <% end %>
+</section>

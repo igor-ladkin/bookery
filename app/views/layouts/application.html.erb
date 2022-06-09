@@ -8,10 +8,12 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= javascript_import_module_tag "flash" %>
   </head>
 
   <body>
     <%= render "layouts/navbar" %>
+    <%= render "layouts/flash" %>
 
     <main class="container">
       <%= yield %>

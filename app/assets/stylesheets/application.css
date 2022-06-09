@@ -14,4 +14,12 @@
  *= require_self
  */
 
- @import "https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css";
+
+.notifications {
+  position: fixed;
+  top: 75px;
+  right: 25px;
+  z-index: 42;
+  max-width: 300px;
+};
