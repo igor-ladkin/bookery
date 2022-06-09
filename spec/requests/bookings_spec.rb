@@ -143,6 +143,14 @@ RSpec.describe "Bookings", type: :request do
 
         request
       end
+
+      it "tracks failed payment" do
+        expect(Analytics)
+          .to receive(:track)
+          .with "payment-failed", user_id: user.id, concert_id: concert.id
+
+        request
+      end
     end
   end
 end
