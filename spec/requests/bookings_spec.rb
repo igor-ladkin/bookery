@@ -35,6 +35,11 @@ RSpec.describe "Bookings", type: :request do
         expect(response).to have_http_status(:redirect)
       end
 
+      it "adds successful flash message" do
+        request
+        expect(flash[:notice]).to eq("Your booking has been created!")
+      end
+
       it "creates a booking for a user" do
         expect { request }.to change { user.bookings.count }.by(1)
       end
@@ -66,6 +71,11 @@ RSpec.describe "Bookings", type: :request do
       end
 
       include_examples "a bad request"
+
+      it "adds alert flash message" do
+        request
+        expect(flash[:alert]).to eq("Sorry, that concert is sold out!")
+      end
     end
   end
 end
