@@ -6,7 +6,7 @@
   <div class="field ">
     <%= form.label :ticket_type, "Ticket type", class: "label" %>
     <div class="select is-rounded">
-      <%= form.select :ticket_type, Concert.available_ticket_types %>
+      <%= form.select :ticket_type, booking.concert.available_ticket_types %>
     </div>
   </div>
 
