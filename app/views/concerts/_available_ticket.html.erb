@@ -1,0 +1,12 @@
+<%
+  tag_class =
+    case ticket
+    when "standard" then "is-info"
+    when "premium" then "is-success"
+    when "vip" then "is-warning"
+    end
+%>
+
+<span class="tag is-light <%= tag_class %>">
+  <%= ticket.upcase %>
+</span>
