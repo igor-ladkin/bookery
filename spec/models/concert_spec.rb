@@ -21,5 +21,15 @@ RSpec.describe Concert, type: :model do
       concert = described_class.new(remaining_ticket_count: -1).tap(&:valid?)
       expect(concert.errors).to have_key(:remaining_ticket_count)
     end
+
+    it "is not valid with empty available_ticket_types" do
+      concert = described_class.new(available_ticket_types: []).tap(&:valid?)
+      expect(concert.errors).to have_key(:available_ticket_types)
+    end
+
+    it "is not valid if available_ticket_types is not supported" do
+      concert = described_class.new(available_ticket_types: ["foo"]).tap(&:valid?)
+      expect(concert.errors).to have_key(:available_ticket_types)
+    end
   end
 end

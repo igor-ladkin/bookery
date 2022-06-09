@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_09_115833) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_09_120419) do
   create_table "bookings", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "concert_id", null: false
@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_09_115833) do
     t.integer "remaining_ticket_count", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "available_ticket_types", default: "---\n- standard\n"
   end
 
   create_table "users", force: :cascade do |t|
