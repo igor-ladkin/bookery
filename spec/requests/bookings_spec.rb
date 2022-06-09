@@ -58,6 +58,10 @@ RSpec.describe "Bookings", type: :request do
       }
     end
 
+    before do
+      allow(Analytics).to receive(:track)
+    end
+
     context "happy path" do
       include_examples "a placed booking"
 
@@ -71,11 +75,11 @@ RSpec.describe "Bookings", type: :request do
       end
 
       it "tracks placed booking" do
-        expect(Analytics)
-          .to receive(:track)
-          .with "booking-placed", user_id: user.id, concert_id: concert.id, paid: true
-
         request
+
+        expect(Analytics)
+          .to have_received(:track)
+          .with "booking-placed", user_id: user.id, concert_id: concert.id, paid: true
       end
     end
 
@@ -137,19 +141,19 @@ RSpec.describe "Bookings", type: :request do
       end
 
       it "tracks placed booking" do
-        expect(Analytics)
-          .to receive(:track)
-          .with "booking-placed", user_id: user.id, concert_id: concert.id, paid: false
-
         request
+
+        expect(Analytics)
+          .to have_received(:track)
+          .with "booking-placed", user_id: user.id, concert_id: concert.id, paid: false
       end
 
       it "tracks failed payment" do
-        expect(Analytics)
-          .to receive(:track)
-          .with "payment-failed", user_id: user.id, concert_id: concert.id
-
         request
+
+        expect(Analytics)
+          .to have_received(:track)
+          .with "payment-failed", user_id: user.id, concert_id: concert.id
       end
     end
   end
