@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_09_154251) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_09_160315) do
   create_table "bookings", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "concert_id", null: false
@@ -34,6 +34,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_09_154251) do
     t.check_constraint "remaining_ticket_count >= 0", name: "concert_remaining_ticket_count_positive"
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "booking_id", null: false
+    t.string "state", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["booking_id"], name: "index_payments_on_booking_id"
+    t.index ["state"], name: "index_payments_on_state"
+    t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -43,4 +54,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_09_154251) do
 
   add_foreign_key "bookings", "concerts"
   add_foreign_key "bookings", "users"
+  add_foreign_key "payments", "bookings"
+  add_foreign_key "payments", "users"
 end
