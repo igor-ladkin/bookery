@@ -9,6 +9,10 @@ class BookingsController < ApplicationController
   def create
     @booking = current_user.bookings.new booking_params
 
+    if requested_quantity.negative? || requested_quantity > Booking::TICKET_LIMIT
+      render :new, status: :bad_request and return
+    end
+
     Booking.transaction do
       @booking.concert.decrement! :remaining_ticket_count, @booking.quantity
       @booking.save!
@@ -72,5 +76,9 @@ class BookingsController < ApplicationController
     params
       .require(:booking)
       .permit :concert_id, :ticket_type, :quantity
+  end
+
+  def requested_quantity
+    booking_params[:quantity].to_i
   end
 end
