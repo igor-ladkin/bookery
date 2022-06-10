@@ -1,13 +1,18 @@
-<li class="column is-half">
+<li class="column is-one-third">
   <div class="card mb-2">
     <div class="card-content">
-      <p class="title mb-5">
-        <%= concert.title %>
-      </p>
+      <div class="media">
+        <div class="media-left">
+          <figure class="image is-64x64">
+            <%= image_tag concert.image_url, alt: "Concert photo for #{concert.title}" %>
+          </figure>
+        </div>
 
-      <p class="subtitle">
-        <%= concert.starts_at.to_formatted_s :long_ordinal %>
-      </p>
+        <div class="media-content">
+          <p class="title is-4"><%= concert.title %></p>
+          <p class="subtitle is-6"><%= concert.starts_at.to_formatted_s :long_ordinal %></p>
+        </div>
+      </div>
 
       <%= render partial: "available_ticket",
                  collection: concert.available_ticket_types,
