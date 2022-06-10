@@ -5,17 +5,33 @@ Booking.delete_all
 Concert.delete_all
 User.delete_all
 
-alex  = User.create! name: "alex"
-sasho = User.create! name: "sasho"
-igor  = User.create! name: "igor"
+alex, sasho, igor =
+  User.create!([
+    { name: "alex" },
+    { name: "sasho" },
+    { name: "igor" },
+  ])
 
-imagine_dragons = Concert.create! title: "Imagine Dragons", starts_at: 1.day.from_now, sales_open_at: "2022-07-10 13:00:00", remaining_ticket_count: 1000, available_ticket_types: ["standard", "vip"], image_url: image_url("imagine-dragons.jpeg")
-kendrick_lamar  = Concert.create! title: "Kendrick Lamar", starts_at: 1.day.from_now, sales_open_at: "2020-07-07 19:00:00", remaining_ticket_count: 1337, available_ticket_types: ["standard", "premium"], image_url: image_url("kendrick-lamar.jpeg")
-adele           = Concert.create! title: "Adele", starts_at: 1.day.from_now, sales_open_at: "2020-07-05 15:00:00", remaining_ticket_count: 298, image_url: image_url("adele.jpeg")
-u2              = Concert.create! title: "U2", starts_at: 1.day.from_now, sales_open_at: "2020-07-05 15:00:00", remaining_ticket_count: 500, available_ticket_types: ["premium", "vip"], image_url: image_url("u2.jpeg")
-foo_fighters    = Concert.create! title: "Foo Fighters", starts_at: 1.day.from_now, sales_open_at: "2020-07-05 15:00:00", remaining_ticket_count: 3000, image_url: image_url("foo-fighters.jpeg")
-coldplay        = Concert.create! title: "Coldplay", starts_at: 1.day.from_now, sales_open_at: "2020-07-05 15:00:00", remaining_ticket_count: 420, available_ticket_types: ["premium"], image_url: image_url("coldplay.jpeg")
+random_concert_params = -> do
+  {
+    starts_at: Faker::Time.between(from: 10.days.from_now, to: 6.months.from_now).beginning_of_hour,
+    sales_open_at: Faker::Time.forward(days: 7).beginning_of_hour,
+  }
+end
 
-booking = Booking.create! user: sasho, concert: adele, ticket_type: "standard", quantity: 2
+imagine_dragons, kendrick_lamar, u2, adele, sam_smith, coldplay, khalid, foo_fighters, travis =
+  Concert.create!([
+    { title: "Imagine Dragons", image_url: image_url("imagine-dragons.jpeg"), remaining_ticket_count: 1000, available_ticket_types: ["standard", "vip"]     },
+    { title: "Kendrick Lamar",  image_url: image_url("kendrick-lamar.jpeg"),  remaining_ticket_count: 1337, available_ticket_types: ["standard", "premium"] },
+    { title: "U2",              image_url: image_url("u2.jpeg"),              remaining_ticket_count: 0,    available_ticket_types: ["premium", "vip"]      },
+    { title: "Adele",           image_url: image_url("adele.jpeg"),           remaining_ticket_count: 298,                                                  },
+    { title: "Sam Smith",       image_url: image_url("sam-smith.jpeg"),       remaining_ticket_count: 69,   available_ticket_types: ["standard"]            },
+    { title: "Coldplay",        image_url: image_url("coldplay.jpeg"),        remaining_ticket_count: 420,  available_ticket_types: ["premium"]             },
+    { title: "Khalid",          image_url: image_url("khalid.jpeg"),          remaining_ticket_count: 0,    available_ticket_types: ["premium"]             },
+    { title: "Foo Fighters",    image_url: image_url("foo-fighters.jpeg"),    remaining_ticket_count: 3000,                                                 },
+    { title: "Coldplay",        image_url: image_url("travis.jpeg"),          remaining_ticket_count: 10,   available_ticket_types: ["vip"]                 },
+  ].map { _1.reverse_merge random_concert_params.call })
 
-Payment.create! booking: booking, user: sasho, state: :completed
+Booking
+  .create!(user: sasho, concert: adele, ticket_type: "standard", quantity: 2)
+  .then { |booking| Payment.create! booking: booking, user: sasho, state: :completed }
