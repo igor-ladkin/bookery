@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_10_093736) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_10_131220) do
   create_table "bookings", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "concert_id", null: false
@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_10_093736) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "available_ticket_types", default: "---\n- standard\n"
+    t.string "image_url", default: "/images/unknown.jpeg", null: false
     t.check_constraint "remaining_ticket_count >= 0", name: "concert_remaining_ticket_count_positive"
   end
 
