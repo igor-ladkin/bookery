@@ -31,11 +31,13 @@ class BookingsController < ApplicationController
 
   rescue ActiveRecord::StatementInvalid => e
     if e.message =~ /constraint failed: concert_remaining_ticket_count_positive/
+      @booking.concert.reload
+
       flash.now[:alert] =
-        if @concert.reload.sold_out?
+        if @booking.concert.sold_out?
           "Sorry, that concert is sold out!"
         else
-          "Sorry, we only have #{@concert.remaining_ticket_count} #{"ticket".pluralize(@concert.remaining_ticket_count)} left for this concert!"
+          "Sorry, we only have #{@booking.concert.remaining_ticket_count} #{"ticket".pluralize(@booking.concert.remaining_ticket_count)} left for this concert!"
         end
 
       render :new, status: :unprocessable_entity
