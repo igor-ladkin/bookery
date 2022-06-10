@@ -10,7 +10,7 @@ to
 
 https://github.com/igor-ladkin/bookery/blob/9aef5f0e876e1f21df1e7d1285e322b6690cc224/app/controllers/bookings_controller.rb#L9-L66
 
-considering that lots of logic are hidden behind special-case validations on modal as well as some significant chunk of action callbacks.
+considering that lots of logic are hidden behind special-case validations on model as well as some significant chunk of action callbacks.
 
 It only took 12 simple business requirement adjustments and bug reports to get from the old to the new. It happens to us every day.
 I hope that this small experiment will give you more confidence to refactor your code.
