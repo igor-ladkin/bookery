@@ -1,8 +1,4 @@
 <%= form_with(model: [:concert, booking]) do |form| %>
-  <div class="field">
-    <%= form.hidden_field :concert_id %>
-  </div>
-
   <div class="field ">
     <%= form.label :ticket_type, "Ticket type", class: "label" %>
     <div class="select is-rounded">
