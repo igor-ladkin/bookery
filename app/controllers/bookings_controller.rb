@@ -1,6 +1,7 @@
 class BookingsController < ApplicationController
   include Dry::Monads[:result]
 
+  before_action :autorize
   before_action :set_concert
   after_action :verify_authorized
 
@@ -9,14 +10,10 @@ class BookingsController < ApplicationController
   end
 
   def new
-    authorize :booking, :new?
-
     @booking = Booking.new concert: @concert
   end
 
   def create
-    authorize :booking, :create?
-
     case Bookings::PlaceOrderCase.new.call(buyer: current_user, concert: @concert, booking_params: booking_params)
     in Success({ booking: }) if booking.paid?
       flash.notice = "Your booking has been created!"
@@ -46,6 +43,10 @@ class BookingsController < ApplicationController
   end
 
   private
+
+  def autorize
+    authorize :booking
+  end
 
   def set_concert
     @concert = Concert.find params[:concert_id]
