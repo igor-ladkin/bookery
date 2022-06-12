@@ -40,7 +40,7 @@ module Bookings
       Success booking: booking, **params
     rescue ActiveRecord::StatementInvalid => e
       if e.message =~ /constraint failed: concert_remaining_ticket_count_positive/
-        Failure booking: booking
+        Failure code: :payment_failed, booking: booking
       else
         raise e
       end

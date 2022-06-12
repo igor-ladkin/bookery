@@ -1,4 +1,6 @@
 class BookingsController < ApplicationController
+  include Dry::Monads[:result]
+
   before_action :check_unpaid_bookings, only: [:create, :new]
   before_action :set_concert
 
@@ -7,39 +9,35 @@ class BookingsController < ApplicationController
   end
 
   def create
-    Bookings::PlaceOrderCase.new.call(buyer: current_user, concert: @concert, booking_params: booking_params) do |result|
-      result.success do |success|
-        if success[:booking].paid?
-          flash.notice = "Your booking has been created!"
+    case Bookings::PlaceOrderCase.new.call(buyer: current_user, concert: @concert, booking_params: booking_params)
+
+    in Success({ booking: })
+      if booking.paid?
+        flash.notice = "Your booking has been created!"
+      else
+        flash.alert = "Sorry, there was an error processing your payment!"
+      end
+
+      redirect_to concerts_path
+
+    in Failure({ code: :invalid_quantity, booking: })
+      render :new, status: :bad_request, assigns: { booking: booking }
+
+    in Failure({ code: :unsupported_ticket_type, booking: })
+      render :new, status: :unprocessable_entity, assigns: { booking: booking }
+
+    in Failure({ code: :payment_failed, booking: })
+      flash.now[:alert] =
+        if booking.concert.reload.sold_out?
+          "Sorry, that concert is sold out!"
         else
-          flash.alert = "Sorry, there was an error processing your payment!"
+          "Sorry, we only have #{booking.concert.remaining_ticket_count} #{"ticket".pluralize(booking.concert.remaining_ticket_count)} left for this concert!"
         end
 
-        redirect_to concerts_path
-      end
+      render :new, status: :unprocessable_entity, assigns: { booking: booking }
 
-      result.failure(:validate_booking) do |failure|
-        if failure[:code] == :invalid_quantity
-          render :new, status: :bad_request, assigns: { booking: failure[:booking] }
-        else
-          render :new, status: :unprocessable_entity, assigns: { booking: failure[:booking] }
-        end
-      end
-
-      result.failure(:reserve_tickets) do |failure|
-        flash.now[:alert] =
-          if failure[:booking].concert.reload.sold_out?
-            "Sorry, that concert is sold out!"
-          else
-            "Sorry, we only have #{failure[:booking].concert.remaining_ticket_count} #{"ticket".pluralize(failure[:booking].concert.remaining_ticket_count)} left for this concert!"
-          end
-
-        render :new, status: :unprocessable_entity, assigns: { booking: failure[:booking] }
-      end
-
-      result.failure do |failure|
-        render :new, status: :unprocessable_entity
-      end
+    in Failure(_)
+      raise "Something went completely wrong!"
     end
   end
 
