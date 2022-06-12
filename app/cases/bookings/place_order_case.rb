@@ -2,22 +2,18 @@ module Bookings
   class PlaceOrderCase
     include Dry::Transaction
 
-    step :verify_params
     step :prepare_booking
     step :validate_booking
     step :reserve_tickets
     step :process_payment
-    step :send_confirmation_email
-    step :track_placed_order
+    tee :send_confirmation_email
+    tee :track_placed_order
 
     private
 
-    def verify_params(params)
-      Success params
-    end
-
     def prepare_booking(buyer:, concert:, booking_params:)
       booking = buyer.bookings.new concert: concert, **booking_params
+
       Success booking: booking, buyer: buyer, concert: concert
     end
 
@@ -63,8 +59,6 @@ module Bookings
         .with(booking: booking)
         .confirmation_email
         .deliver_later
-
-      Success booking: booking, **params
     end
 
     def track_placed_order(booking:, buyer:, **params)
@@ -72,8 +66,6 @@ module Bookings
         concert_id: booking.concert_id,
         user_id: buyer.id,
         paid: booking.paid?
-
-      Success booking: booking, buyer: buyer, **params
     end
   end
 end
