@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
+
   before_action :hijack_user_session
   before_action :set_current_user
 
