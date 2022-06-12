@@ -25,11 +25,11 @@ class BookingsController < ApplicationController
     in Failure({ code: :unsupported_ticket_type, booking: })
       render_error :unprocessable_entity, booking
 
-    in Failure({ code: :payment_failed, booking: }) if booking.concert.reload.sold_out?
+    in Failure({ code: :reservation_failed, booking: }) if booking.concert.reload.sold_out?
       flash.now[:alert] = "Sorry, that concert is sold out!"
       render_error :unprocessable_entity, booking
 
-    in Failure({ code: :payment_failed, booking: })
+    in Failure({ code: :reservation_failed, booking: })
       flash.now[:alert] = "Sorry, we only have #{booking.concert.remaining_ticket_count} #{"ticket".pluralize(booking.concert.remaining_ticket_count)} left for this concert!"
       render_error :unprocessable_entity, booking
 
