@@ -11,30 +11,27 @@ class BookingsController < ApplicationController
   def create
     case Bookings::PlaceOrderCase.new.call(buyer: current_user, concert: @concert, booking_params: booking_params)
 
-    in Success({ booking: })
-      if booking.paid?
-        flash.notice = "Your booking has been created!"
-      else
-        flash.alert = "Sorry, there was an error processing your payment!"
-      end
+    in Success({ booking: }) if booking.paid?
+      flash.notice = "Your booking has been created!"
+      redirect_to concerts_path
 
+    in Success({ booking: })
+      flash.alert = "Sorry, there was an error processing your payment!"
       redirect_to concerts_path
 
     in Failure({ code: :invalid_quantity, booking: })
-      render :new, status: :bad_request, assigns: { booking: booking }
+      render_error :bad_request, booking
 
     in Failure({ code: :unsupported_ticket_type, booking: })
-      render :new, status: :unprocessable_entity, assigns: { booking: booking }
+      render_error :unprocessable_entity, booking
+
+    in Failure({ code: :payment_failed, booking: }) if booking.concert.reload.sold_out?
+      flash.now[:alert] = "Sorry, that concert is sold out!"
+      render_error :unprocessable_entity, booking
 
     in Failure({ code: :payment_failed, booking: })
-      flash.now[:alert] =
-        if booking.concert.reload.sold_out?
-          "Sorry, that concert is sold out!"
-        else
-          "Sorry, we only have #{booking.concert.remaining_ticket_count} #{"ticket".pluralize(booking.concert.remaining_ticket_count)} left for this concert!"
-        end
-
-      render :new, status: :unprocessable_entity, assigns: { booking: booking }
+      flash.now[:alert] = "Sorry, we only have #{booking.concert.remaining_ticket_count} #{"ticket".pluralize(booking.concert.remaining_ticket_count)} left for this concert!"
+      render_error :unprocessable_entity, booking
 
     in Failure(_)
       raise "Something went completely wrong!"
@@ -57,5 +54,9 @@ class BookingsController < ApplicationController
     params
       .require(:booking)
       .permit :ticket_type, :quantity
+  end
+
+  def render_error(status, booking)
+    render :new, status: status, assigns: { booking: booking }
   end
 end
