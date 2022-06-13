@@ -6,8 +6,8 @@ module Bookings
     step :validate_booking
     step :reserve_tickets
     step :process_payment
-    step :send_confirmation_email
-    step :track_booking_placed
+    tee :send_confirmation_email
+    tee :track_booking_placed
 
     private
 
@@ -59,8 +59,6 @@ module Bookings
         .with(booking: booking)
         .confirmation_email
         .deliver_later
-
-      Success booking: booking, **rest
     end
 
     def track_booking_placed(booking:, buyer:, **rest)
@@ -68,8 +66,6 @@ module Bookings
         concert_id: booking.concert_id,
         user_id: buyer.id,
         paid: booking.paid?
-
-      Success booking: booking, buyer: buyer, **rest
     end
   end
 end
