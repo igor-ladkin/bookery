@@ -1,14 +1,21 @@
 class BookingsController < ApplicationController
   include Dry::Monads[:result]
 
-  before_action :check_unpaid_bookings, only: [:create, :new]
   before_action :set_concert
 
+  rescue_from Pundit::NotAuthorizedError do
+    redirect_to concerts_path, alert: "Sorry, you have unpaid bookings!"
+  end
+
   def new
+    authorize :booking, :new?
+
     @booking = Booking.new concert: @concert
   end
 
   def create
+    authorize :booking, :create?
+
     case Bookings.place_booking(buyer: current_user, concert: @concert, booking_params: booking_params)
     in Success(booking:) if booking.paid?
       redirect_to concerts_path, notice: "Your booking has been created!"
@@ -36,12 +43,6 @@ class BookingsController < ApplicationController
   end
 
   private
-
-  def check_unpaid_bookings
-    unless current_user.bookings.all?(&:paid?)
-      redirect_to concerts_path, alert: "Sorry, you have unpaid bookings!"
-    end
-  end
 
   def set_concert
     @concert = Concert.find params[:concert_id]
