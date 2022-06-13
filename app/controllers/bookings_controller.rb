@@ -7,6 +7,16 @@ class BookingsController < ApplicationController
   end
 
   def create
+    Bookings::PlaceBookingCase.new.call(buyer: current_user, concert: @concert, booking_params: booking_params) do |result|
+      result.success do
+        redirect_to concerts_path, notice: "Your booking has been created!"
+      end
+
+      result.failure { puts "Failure, #{booking_params.inspect}" }
+    end
+  end
+
+  def old_create
     @booking = current_user.bookings.new booking_params
     @booking.valid?
 
