@@ -8,72 +8,32 @@ class BookingsController < ApplicationController
 
   def create
     Bookings::PlaceBookingCase.new.call(buyer: current_user, concert: @concert, booking_params: booking_params) do |result|
-      result.success do
-        redirect_to concerts_path, notice: "Your booking has been created!"
+      result.success do |success|
+        if success[:booking].paid?
+          redirect_to concerts_path, notice: "Your booking has been created!"
+        else
+          redirect_to concerts_path, alert: "Sorry, there was an error processing your payment!"
+        end
       end
 
-      result.failure { puts "Failure, #{booking_params.inspect}" }
-    end
-  end
+      result.failure(:reserve_tickets) do |failure|
+        flash.now[:alert] =
+          if failure[:booking].concert.sold_out?
+            "Sorry, that concert is sold out!"
+          else
+            "Sorry, we only have #{failure[:booking].concert.remaining_ticket_count} #{"ticket".pluralize(failure[:booking].concert.remaining_ticket_count)} left for this concert!"
+          end
 
-  def old_create
-    @booking = current_user.bookings.new booking_params
-    @booking.valid?
+        render :new, status: :unprocessable_entity, assigns: { booking: failure[:booking] }
+      end
 
-    if requested_quantity.negative? || requested_quantity > Booking::TICKET_LIMIT
-      render :new, status: :bad_request and return
-    end
-
-    if @booking.errors.has_key? :quantity
-      render :new, status: :bad_request and return
-    end
-
-    Booking.transaction do
-      @booking.concert.decrement! :remaining_ticket_count, @booking.quantity
-      @booking.save!
-    end
-
-    payment = Payment.process(@booking, current_user)
-
-    redirect_to concerts_path, notice: "Your booking has been created!"
-  rescue ActiveRecord::RecordInvalid
-    render :new, status: :unprocessable_entity
-
-  rescue ActiveRecord::StatementInvalid => e
-    if e.message =~ /constraint failed: concert_remaining_ticket_count_positive/
-      @booking.concert.reload
-
-      flash.now[:alert] =
-        if @booking.concert.sold_out?
-          "Sorry, that concert is sold out!"
+      result.failure do |failure|
+        if failure[:error_code] == :invalid_quantity
+          render :new, status: :bad_request, assigns: { booking: failure[:booking] }
         else
-          "Sorry, we only have #{@booking.concert.remaining_ticket_count} #{"ticket".pluralize(@booking.concert.remaining_ticket_count)} left for this concert!"
+          render :new, status: :unprocessable_entity, assigns: { booking: failure[:booking] }
         end
-
-      render :new, status: :unprocessable_entity
-    else
-      raise e
-    end
-
-  rescue Payment::ChargeError => e
-    Analytics.track "payment-failed",
-        concert_id: @booking.concert_id,
-        user_id: current_user.id
-
-    flash.now[:alert] = "Sorry, there was an error processing your payment!"
-    redirect_to concerts_path
-
-  ensure
-    if @booking.persisted?
-      BookingsMailer
-        .with(booking: @booking)
-        .confirmation_email
-        .deliver_later
-
-      Analytics.track "booking-placed",
-        concert_id: @booking.concert_id,
-        user_id: current_user.id,
-        paid: @booking.paid?
+      end
     end
   end
 
