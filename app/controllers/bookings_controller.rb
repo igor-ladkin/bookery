@@ -9,7 +9,7 @@ class BookingsController < ApplicationController
   end
 
   def create
-    case Bookings::PlaceBookingCase.new.call(buyer: current_user, concert: @concert, booking_params: booking_params)
+    case Bookings.place_booking(buyer: current_user, concert: @concert, booking_params: booking_params)
     in Success(booking:) if booking.paid?
       redirect_to concerts_path, notice: "Your booking has been created!"
 
