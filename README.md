@@ -2,15 +2,15 @@
 
 Hello everyone! 🥸
 
-This silly project is our playground for learning and experimenting with service objects and controller refactorings. Rails controllers and to some extent graphql resolvers (especially for mutations) are very prominent to attract more and more code if you are not paying attention. On the example of `BookingsController#create` you can follow through the journey of how it became from
+This silly project is our playground for learning and experimenting with service objects and controller refactorings. Rails controllers and to some extent graphql resolvers (especially for mutations) are very prominent to attract more and more code if you are not paying attention. On the example of `BookingsController#create` you can follow through the journey of how it transformed from
 
 https://github.com/igor-ladkin/bookery/blob/49399622f0d249827e202a6b29d792ee5634ba32/app/controllers/bookings_controller.rb#L8-L16
 
-to
+into
 
 https://github.com/igor-ladkin/bookery/blob/9aef5f0e876e1f21df1e7d1285e322b6690cc224/app/controllers/bookings_controller.rb#L9-L66
 
-considering that lots of logic are hidden behind special-case validations on model as well as some significant chunk of action callbacks.
+On top of that, lots of logic are hidden behind special-case validations on model as well as some significant chunk of action callbacks.
 
 It only took 12 simple business requirement adjustments and bug reports to get from the old to the new. It happens to us every day.
 I hope that this small experiment will give you more confidence to refactor your code.
@@ -32,8 +32,8 @@ rails server
 
 ## Tips
 
-- 👨‍🎨 There is no real user management in this project. To mimic different users' sessions, you can open and page and pass `u` query parameter. For example http://localhost:3000?u=sasho.
-- 💿 Don't afraid to use `rails db:seed` to reset your database.
+- 👨‍🎨 There is no real user management in this project. To mimic different users' sessions, you can open any page and pass `u` query parameter. For example http://localhost:3000?u=sasho.
+- 💿 Don't be afraid to use `rails db:seed` to reset your database.
 - 🤪 Have fun!
 
 ## How to get the most from the exercise
