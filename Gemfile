@@ -5,6 +5,7 @@ ruby "3.1.1"
 
 gem "rails", "~> 7.0.3"
 gem "dry-transaction"
+gem "dry-monads"
 gem "sprockets-rails"
 gem "sqlite3", "~> 1.4"
 gem "puma", "~> 5.0"

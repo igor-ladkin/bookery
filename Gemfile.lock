@@ -229,6 +229,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   debug
+  dry-monads
   dry-transaction
   faker
   importmap-rails

@@ -36,7 +36,7 @@ module Bookings
     rescue ActiveRecord::StatementInvalid => e
       if e.message =~ /constraint failed: concert_remaining_ticket_count_positive/
         booking.concert.reload
-        Failure booking: booking, **rest
+        Failure error_code: :ticket_reservation_failed, booking: booking, **rest
       else
         raise e
       end
